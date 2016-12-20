@@ -43,7 +43,7 @@ function makeTemplate($length){
   ];
 }
 
-function makeButton($length){
+function makeButtonTemplateData($length){
   return
   [
     [
