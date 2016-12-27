@@ -1,18 +1,16 @@
 <?php
 
 require_once __DIR__ . '/vendor/autoload.php';
-//DB接続
-$dbopts = parse_url(getenv('DATABASE_URL'));
-$app->register(new Herrera\Pdo\PdoServiceProvider(),
-               array(
-                   'pdo.dsn' => 'pgsql:dbname='.ltrim($dbopts["path"],'/').';host='.$dbopts["host"] . ';port=' . $dbopts["port"],
-                   'pdo.username' => $dbopts["user"],
-                   'pdo.password' => $dbopts["pass"]
-               )
-);
-echo "<pre>";
-print_r($dbopts);
-echo "</pre>";
+// //DB
+// $dbopts = parse_url(getenv('DATABASE_URL'));
+// $app->register(new Herrera\Pdo\PdoServiceProvider(),
+//                array(
+//                    'pdo.dsn' => 'pgsql:dbname='.ltrim($dbopts["path"],'/').';host='.$dbopts["host"] . ';port=' . $dbopts["port"],
+//                    'pdo.username' => $dbopts["user"],
+//                    'pdo.password' => $dbopts["pass"]
+//                )
+// );
+
 $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
 $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('CHANNEL_SECRET')]);
 
