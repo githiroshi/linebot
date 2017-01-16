@@ -39,7 +39,7 @@ foreach ($events as $event) {
 // replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
 // replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
 // replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
-replyStickerMessage($bot, $event->getReplyToken(), 41, 2);
+replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
 
 }
 
