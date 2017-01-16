@@ -52,20 +52,31 @@ foreach ($events as $event) {
 //     new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder("LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473),
 //     new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
 //   );
-replyButtonsTemplate($bot,
+// replyButtonsTemplate($bot,
+//     $event->getReplyToken(),
+//     "お天気お知らせ - 今日は天気予報は晴れです",
+//     "https://" . $_SERVER["HTTP_HOST"] . "/imgs/template.jpg",
+//     "お天気お知らせ",
+//     "今日は天気予報は晴れです",
+//     new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+//       "明日の天気", "tomorrow"),
+//     new LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder (
+//       "週末の天気", "weekend"),
+//     new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
+//       "Webで見る", "http://google.jp")
+//     );
+replyConfirmTemplate($bot,
     $event->getReplyToken(),
-    "お天気お知らせ - 今日は天気予報は晴れです",
-    "https://" . $_SERVER["HTTP_HOST"] . "/imgs/template.jpg",
-    "お天気お知らせ",
-    "今日は天気予報は晴れです",
-    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-      "明日の天気", "tomorrow"),
-    new LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder (
-      "週末の天気", "weekend"),
+    "Webで詳しく見ますか？",
+    "Webで詳しく見ますか？",
     new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
-      "Webで見る", "http://google.jp")
+      "見る", "http://google.jp"),
+    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "見ない", "ignore"),
+    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "非表示", "never")
     );
-
+    
 }
 
 function replyTextMessage($bot, $replyToken, $text) {
@@ -115,6 +126,21 @@ function replyButtonsTemplate($bot, $replyToken, $alternativeText, $imageUrl, $t
   $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
     $alternativeText,
     new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder ($title, $text, $imageUrl, $actionArray)
+  );
+  $response = $bot->replyMessage($replyToken, $builder);
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+function replyConfirmTemplate($bot, $replyToken, $alternativeText, $text, ...$actions) {
+  $actionArray = array();
+  foreach($actions as $value) {
+    array_push($actionArray, $value);
+  }
+  $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+    $alternativeText,
+    new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder ($text, $actionArray)
   );
   $response = $bot->replyMessage($replyToken, $builder);
   if (!$response->isSucceeded()) {
