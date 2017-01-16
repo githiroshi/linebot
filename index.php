@@ -28,12 +28,22 @@ foreach ($events as $event) {
     continue;
   }
   // $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
-  $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
-$message = $profile["displayName"] . "さん、おはようございます！今日も頑張りましょう！";
-$bot->replyMessage($event->getReplyToken(),
-  (new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
-    ->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message))
-    ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
-);
+//   $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
+// $message = $profile["displayName"] . "さん、おはようございます！今日も頑張りましょう！";
+// $bot->replyMessage($event->getReplyToken(),
+//   (new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
+//     ->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message))
+//     ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
+// );
+
+replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
+
+}
+
+function replyTextMessage($bot, $replyToken, $text) {
+  $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
 }
  ?>
