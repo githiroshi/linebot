@@ -39,7 +39,13 @@ foreach ($events as $event) {
 // replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
 // replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
 // replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
-replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
+// replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
+replyMultiMessage($bot, $event->getReplyToken(),
+    new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("TextMessage"),
+    new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder("https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg"),
+    new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder("LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473),
+    new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
+  );
 
 }
 
@@ -66,6 +72,17 @@ function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
 
 function replyStickerMessage($bot, $replyToken, $packageId, $stickerId) {
   $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder($packageId, $stickerId));
+  if (!$response->isSucceeded()) {
+    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+function replyMultiMessage($bot, $replyToken, ...$msgs) {
+  $builder = new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder();
+  foreach($msgs as $value) {
+    $builder->add($value);
+  }
+  $response = $bot->replyMessage($replyToken, $builder);
   if (!$response->isSucceeded()) {
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
