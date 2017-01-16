@@ -159,7 +159,7 @@ function replyConfirmTemplate($bot, $replyToken, $alternativeText, $text, ...$ac
   }
   $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
     $alternativeText,
-    new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder ($text, $actionArray)
+    new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder ($actionArray)
   );
   $response = $bot->replyMessage($replyToken, $builder);
   if (!$response->isSucceeded()) {
