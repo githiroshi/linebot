@@ -27,40 +27,13 @@ foreach ($events as $event) {
     error_log('Non text message has come');
     continue;
   }
-  $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
-}
-
-function makeTemplate($length){
-  return [
-    "type" => "template",
-    "altText" => "どの言葉にしますか？",
-    "template" => [
-      "type" => "buttons",
-      "titel" => "Menu",
-      "text" => "作る文字列の種類を選択",
-      "actions" => makeButtonTemplateData($length)
-      ]
-  ];
-}
-
-function makeButtonTemplateData($length){
-  return
-  [
-    [
-      "type" => "postback",
-      "label" => "半角英数",
-      "data" => "lang=half&length=" . $length
-    ],
-    [
-      "type" => "postback",
-      "label" => "全角日本語",
-      "data" => "lang=half&length=" . $length
-    ],
-    [
-      "type" => "postback",
-      "label" => "半角記号",
-      "data" => "lang=half&length=" . $length
-    ]
-  ];
+  // $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
+  $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
+$message = $profile["displayName"] . "さん、おはようございます！今日も頑張りましょう！";
+$bot->replyMessage($event->getReplyToken(),
+  (new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
+    ->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message))
+    ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
+);
 }
  ?>
