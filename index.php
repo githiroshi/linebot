@@ -20,10 +20,10 @@ try {
 
 foreach ($events as $event) {
 
-  // if ($event instanceof \LINE\LINEBot\Event\PostbackEvent) {
-  // replyTextMessage($bot, $event->getReplyToken(), "Postback受信「" . $event->getPostbackData() . "」");
-  // continue;
-  // }
+  if ($event instanceof \LINE\LINEBot\Event\PostbackEvent) {
+  replyTextMessage($bot, $event->getReplyToken(), "Postback受信「" . $event->getPostbackData() . "」");
+  continue;
+  }
 
   if (!($event instanceof \LINE\LINEBot\Event\MessageEvent)) {
     error_log('Non message event has come');
@@ -65,36 +65,36 @@ foreach ($events as $event) {
 //     new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
 //       "Webで見る", "http://google.jp")
 //     );
-// replyConfirmTemplate($bot,
-//     $event->getReplyToken(),
-//     "Webで詳しく見ますか？",
-//     "Webで詳しく見ますか？",
-//     new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
-//       "見る", "http://google.jp"),
-//     new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-//       "見ない", "ignore"),
-//     new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-//       "非表示", "never")
-//     );
-
-$columnArray = array();
-  for($i = 0; $i < 5; $i++) {
-    $actionArray = array();
-    array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-      "ボタン" . $i . "-" . 1, "c-" . $i . "-" . 1));
-    array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-      "ボタン" . $i . "-" . 2, "c-" . $i . "-" . 2));
-    array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-      "ボタン" . $i . "-" . 3, "c-" . $i . "-" . 3));
-    $column = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder (
-      ($i + 1) . "日後の天気",
-      "晴れ",
-      "https://" . $_SERVER["HTTP_HOST"] .  "/imgs/template.jpg",
-      $actionArray
+replyConfirmTemplate($bot,
+    $event->getReplyToken(),
+    "Webで詳しく見ますか？",
+    "Webで詳しく見ますか？",
+    new LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder (
+      "見る", "http://google.jp"),
+    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "見ない", "ignore"),
+    new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "非表示", "never")
     );
-    array_push($columnArray, $column);
-  }
-  replyCarouselTemplate($bot, $event->getReplyToken(),"今後の天気予報", $columnArray);
+
+// $columnArray = array();
+//   for($i = 0; $i < 5; $i++) {
+//     $actionArray = array();
+//     array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+//       "ボタン" . $i . "-" . 1, "c-" . $i . "-" . 1));
+//     array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+//       "ボタン" . $i . "-" . 2, "c-" . $i . "-" . 2));
+//     array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+//       "ボタン" . $i . "-" . 3, "c-" . $i . "-" . 3));
+//     $column = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder (
+//       ($i + 1) . "日後の天気",
+//       "晴れ",
+//       "https://" . $_SERVER["HTTP_HOST"] .  "/imgs/template.jpg",
+//       $actionArray
+//     );
+//     array_push($columnArray, $column);
+//   }
+//   replyCarouselTemplate($bot, $event->getReplyToken(),"今後の天気予報", $columnArray);
 
 }
 
