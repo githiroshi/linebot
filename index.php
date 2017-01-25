@@ -18,6 +18,9 @@ try {
   error_log("parseEventRequest failed. InvalidEventRequestException => ".var_export($e, true));
 }
 
+$status = 0;
+
+
 foreach ($events as $event) {
 
   if ($event instanceof \LINE\LINEBot\Event\PostbackEvent) {
@@ -34,16 +37,37 @@ foreach ($events as $event) {
     continue;
   }
 
-  // $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
-  $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
-$message = $profile["displayName"] . "さんは今もバリバリのエンジニア？";
+  switch ($status) {
+    case 0:
+    $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
+    $message = $profile["displayName"] . "さんは今もバリバリのエンジニア？";
+    replyTextMessage($bot, $event->getReplyToken(), $message);
+    $status = 1;
+      break;
+
+    case 1:
+    $message = "じゃあ開発経験何年ぐらい？";
+    replyTextMessage($bot, $event->getReplyToken(), $message);
+      break;
+
+    case 2:
+      # code...
+      break;
+
+    default:
+      # code...
+      break;
+  }
+
+
+// $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
 // $bot->replyMessage($event->getReplyToken(),
 //   (new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
 //     ->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message))
 //     ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
 // );
 
-replyTextMessage($bot, $event->getReplyToken(), $message);
+
 // replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
 // replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
 // replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
