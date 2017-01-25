@@ -18,8 +18,6 @@ try {
   error_log("parseEventRequest failed. InvalidEventRequestException => ".var_export($e, true));
 }
 
-$status = 0;
-
 foreach ($events as $event) {
 
   if ($event instanceof \LINE\LINEBot\Event\PostbackEvent) {
@@ -35,16 +33,16 @@ foreach ($events as $event) {
     error_log('Non text message has come');
     continue;
   }
-  $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
-  $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
-$message = $profile["displayName"] . "さんは現在もバリバリのエンジニア？";
-$bot->replyMessage($event->getReplyToken(),
-  (new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
-    ->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message))
-    ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
-);
+  // $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
+//   $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
+// $message = $profile["displayName"] . "さん、おはようございます！今日も頑張りましょう！";
+// $bot->replyMessage($event->getReplyToken(),
+//   (new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
+//     ->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message))
+//     ->add(new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114))
+// );
 
-// replyTextMessage($bot, $event->getReplyToken(), $message);
+// replyTextMessage($bot, $event->getReplyToken(), "TextMessage");
 // replyImageMessage($bot, $event->getReplyToken(), "https://" . $_SERVER["HTTP_HOST"] . "/imgs/original.jpg", "https://" . $_SERVER["HTTP_HOST"] . "/imgs/preview.jpg");
 // replyLocationMessage($bot, $event->getReplyToken(), "LINE", "東京都渋谷区渋谷2-21-1 ヒカリエ27階", 35.659025, 139.703473);
 // replyStickerMessage($bot, $event->getReplyToken(), 1, 1);
@@ -79,24 +77,24 @@ $bot->replyMessage($event->getReplyToken(),
 //       "非表示", "never")
 //     );
 
-// $columnArray = array();
-//   for($i = 0; $i < 5; $i++) {
-//     $actionArray = array();
-//     array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-//       "ボタン" . $i . "-" . 1, "c-" . $i . "-" . 1));
-//     array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-//       "ボタン" . $i . "-" . 2, "c-" . $i . "-" . 2));
-//     array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
-//       "ボタン" . $i . "-" . 3, "c-" . $i . "-" . 3));
-//     $column = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder (
-//       ($i + 1) . "日後の天気",
-//       "晴れ",
-//       "https://" . $_SERVER["HTTP_HOST"] .  "/imgs/template.jpg",
-//       $actionArray
-//     );
-//     array_push($columnArray, $column);
-//   }
-//   replyCarouselTemplate($bot, $event->getReplyToken(),"今後の天気予報", $columnArray);
+$columnArray = array();
+  for($i = 0; $i < 5; $i++) {
+    $actionArray = array();
+    array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "ボタン" . $i . "-" . 1, "c-" . $i . "-" . 1));
+    array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "ボタン" . $i . "-" . 2, "c-" . $i . "-" . 2));
+    array_push($actionArray, new LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder (
+      "ボタン" . $i . "-" . 3, "c-" . $i . "-" . 3));
+    $column = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder (
+      ($i + 1) . "日後の天気",
+      "晴れ",
+      "https://" . $_SERVER["HTTP_HOST"] .  "/imgs/template.jpg",
+      $actionArray
+    );
+    array_push($columnArray, $column);
+  }
+  replyCarouselTemplate($bot, $event->getReplyToken(),"今後の天気予報", $columnArray);
 
 }
 
