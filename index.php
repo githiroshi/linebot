@@ -1,61 +1,46 @@
-<?php
-require_once __DIR__ . '/vendor/autoload.php';
-use Symfony\Component\HttpFoundation\Request;
+$accessToken = ‘ LINEのアクセストークン’;
 
-$app = new Silex\Application();
-$app->post('/callback', function (Request $request) use ($app) {
-    $client = new GuzzleHttp\Client();
-    $body = json_decode($request->getContent(), true);
-    foreach ($body['result'] as $msg) {
-        // get from and message
-        $from = $msg['content']['from'];
-        $message = $msg['content']['text'];
-        // get context from Redis
-        $redis = new Predis\Client(getenv('REDISTOGO_URL'));
-        $context = $redis->get($from);
-        // chat API
-        $response = chat($message, $context);
-        // save context to Redis
-        $redis->set($from, $response->context);
+//ユーザーからのメッセージ取得
+$json_string = file_get_contents('php://input');
+$jsonObj = json_decode($json_string);
 
-        $res_content = $msg['content'];
-        $res_content['text'] = $response;
-        $requestOptions = [
-            'body' => json_encode([
-                'to' => [$from],
-                'toChannel' => 1383378250, #Fixed value
-                'eventType' => '138311608800106203', #Fixed value
-                "content" => $res_content,
-            ]),
-            'headers' => [
-                'Content-Type' => 'application/json; charset=UTF-8',
-                'X-Line-ChannelID' => getenv('CHANNEL_ID'),
-                'X-Line-ChannelSecret' => getenv('CHANNEL_SECRET'),
-                'X-Line-Trusted-User-With-ACL' => getenv('LINE_CHANNEL_MID'),
-            ],
-            'proxy' => [
-                'https' => getenv('FIXIE_URL'),
-            ],
-        ];
-        try {
-            $client->request('post', 'https://trialbot-api.line.me/v1/events', $requestOptions);
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-        }
-    }
-    return 'OK';
-});
+$type = $jsonObj--->{"events"}[0]->{"message"}->{"type"};
+$text = $jsonObj->{"events"}[0]->{"message"}->{"text"};
+$replyToken = $jsonObj->{"events"}[0]->{"replyToken"};
 
-$app->run();
 
-function chat($message, $context) {
-    $api_key = getenv('DOCOMO_API_KEY');
+//ドコモの雑談データ取得
+$response = chat($text);
+
+$response_format_text = [
+    "type" => "text",
+    "text" =>  $response
+  ];
+
+$post_data = [
+	"replyToken" => $replyToken,
+	"messages" => [$response_format_text]
+	];
+
+$ch = curl_init("https://api.line.me/v2/bot/message/reply");
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json; charser=UTF-8',
+    'Authorization: Bearer ' . $accessToken
+    ));
+$result = curl_exec($ch);
+curl_close($ch);
+
+
+//ドコモの雑談APIから雑談データを取得
+function chat($text) {
+    // docomo chatAPI
+    $api_key = ‘ドコモのAPIキー’;
     $api_url = sprintf('https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY=%s', $api_key);
-    $req_body = array(
-        'utt' => $message,
-        'context' => $context,
-    );
-    $req_body['context'] = $message;
+    $req_body = array('utt' => $text);
 
     $headers = array(
         'Content-Type: application/json; charset=UTF-8',
