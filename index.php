@@ -1,65 +1,42 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
 
-$httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
-$bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('CHANNEL_SECRET')]);
+$accessToken = getenv('CHANNEL_ACCESS_TOKEN');
 
-$signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
-try {
-  $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
-} catch(\LINE\LINEBot\Exception\InvalidSignatureException $e) {
-  error_log("parseEventRequest failed. InvalidSignatureException => ".var_export($e, true));
-} catch(\LINE\LINEBot\Exception\UnknownEventTypeException $e) {
-  error_log("parseEventRequest failed. UnknownEventTypeException => ".var_export($e, true));
-} catch(\LINE\LINEBot\Exception\UnknownMessageTypeException $e) {
-  error_log("parseEventRequest failed. UnknownMessageTypeException => ".var_export($e, true));
-} catch(\LINE\LINEBot\Exception\InvalidEventRequestException $e) {
-  error_log("parseEventRequest failed. InvalidEventRequestException => ".var_export($e, true));
-}
+//ユーザーからのメッセージ取得
+$json_string = file_get_contents('php://input');
+$jsonObj = json_decode($json_string);
 
-foreach ($events as $event) {
+$type = $jsonObj->{"events"}[0]->{"message"}->{"type"};
+$text = $jsonObj->{"events"}[0]->{"message"}->{"text"};
+$replyToken = $jsonObj->{"events"}[0]->{"replyToken"};
 
-  if ($event instanceof \LINE\LINEBot\Event\PostbackEvent) {
-  replyTextMessage($bot, $event->getReplyToken(), "Postback受信「" . $event->getPostbackData() . "」");
-  continue;
-  }
 
-  if (!($event instanceof \LINE\LINEBot\Event\MessageEvent)) {
-    error_log('Non message event has come');
-    continue;
-  }
-  if (!($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage)) {
-    error_log('Non text message has come');
-    continue;
-  }
+//ドコモの雑談データ取得
+$response = chat($text);
 
-  //ドコモの雑談データ取得
-  $response = chat($event->getText());
+$response_format_text = [
+    "type" => "text",
+    "text" =>  $response
+  ];
 
-  $response_format_text = [
-      "type" => "text",
-      "text" =>  $response
-    ];
+$post_data = [
+	"replyToken" => $replyToken,
+	"messages" => [$response_format_text]
+	];
 
-  $post_data = [
-  	"replyToken" => $event->getReplyToken(),
-  	"messages" => [$response_format_text]
-  	];
+$ch = curl_init("https://api.line.me/v2/bot/message/reply");
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json; charser=UTF-8',
+    'Authorization: Bearer ' . $accessToken
+    ));
+$result = curl_exec($ch);
+curl_close($ch);
 
-  $ch = curl_init("https://api.line.me/v2/bot/message/reply");
-  curl_setopt($ch, CURLOPT_POST, true);
-  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-      'Content-Type: application/json; charser=UTF-8',
-      'Authorization: Bearer ' . getenv('CHANNEL_ACCESS_TOKEN')
-      ));
-  $result = curl_exec($ch);
-  curl_close($ch);
-
-}
 
 //ドコモの雑談APIから雑談データを取得
 function chat($text) {
