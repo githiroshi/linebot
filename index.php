@@ -43,7 +43,7 @@ foreach ($events as $event) {
     ];
 
   $post_data = [
-  	"replyToken" => $replyToken,
+  	"replyToken" => $event->getReplyToken(),
   	"messages" => [$response_format_text]
   	];
 
@@ -54,7 +54,7 @@ foreach ($events as $event) {
   curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
   curl_setopt($ch, CURLOPT_HTTPHEADER, array(
       'Content-Type: application/json; charser=UTF-8',
-      'Authorization: Bearer ' . $accessToken
+      'Authorization: Bearer ' . getenv('CHANNEL_ACCESS_TOKEN')
       ));
   $result = curl_exec($ch);
   curl_close($ch);
