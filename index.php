@@ -108,7 +108,7 @@ foreach ($events as $event) {
 //
 //
 //ドコモの雑談データ取得
-$response = chat($text);
+$response = chat($event->getText());
 replyTextMessage($bot, $event->getReplyToken(), $response);
 
 // $response_format_text = [
