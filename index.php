@@ -33,6 +33,11 @@ foreach ($events as $event) {
     error_log('Non text message has come');
     continue;
   }
+
+  //ドコモの雑談データ取得
+  $response = chat($event->getText());
+  replyTextMessage($bot, $event->getReplyToken(), $response);
+
   // $bot->replyText($event->getReplyToken(), makeTemplate($event->getText()));
 //   $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
 // $message = $profile["displayName"] . "さん、おはようございます！今日も頑張りましょう！";
@@ -95,43 +100,6 @@ foreach ($events as $event) {
 //     array_push($columnArray, $column);
 //   }
 //   replyCarouselTemplate($bot, $event->getReplyToken(),"今後の天気予報", $columnArray);
-
-// $accessToken = ‘ LINEのアクセストークン’;
-//
-// //ユーザーからのメッセージ取得
-// $json_string = file_get_contents('php://input');
-// $jsonObj = json_decode($json_string);
-//
-// $type = $jsonObj--->{"events"}[0]->{"message"}->{"type"};
-// $text = $jsonObj->{"events"}[0]->{"message"}->{"text"};
-// $replyToken = $jsonObj->{"events"}[0]->{"replyToken"};
-//
-//
-//ドコモの雑談データ取得
-$response = chat($event->getText());
-replyTextMessage($bot, $event->getReplyToken(), $response);
-
-// $response_format_text = [
-//     "type" => "text",
-//     "text" =>  $response
-//   ];
-//
-// $post_data = [
-// 	"replyToken" => $replyToken,
-// 	"messages" => [$response_format_text]
-// 	];
-//
-// $ch = curl_init("https://api.line.me/v2/bot/message/reply");
-// curl_setopt($ch, CURLOPT_POST, true);
-// curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
-// curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-//     'Content-Type: application/json; charser=UTF-8',
-//     'Authorization: Bearer ' . $accessToken
-//     ));
-// $result = curl_exec($ch);
-// curl_close($ch);
 
 
 
