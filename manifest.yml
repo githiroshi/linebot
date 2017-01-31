@@ -1,6 +1,6 @@
 applications:
-- path: .
-  buildpack: https://github.com/jthomas/nodejs-v4-buildpack.git
+- buildpack: https://github.com/githiroshi/linebot.git
+  path: .
   memory: 128M
   instances: 1
   domain: mybluemix.net
