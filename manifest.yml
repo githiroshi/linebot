@@ -1,0 +1,9 @@
+applications:
+- path: .
+  buildpack: https://github.com/jthomas/nodejs-v4-buildpack.git
+  memory: 128M
+  instances: 1
+  domain: mybluemix.net
+  name: linebot-hiroshis
+  host: linebot-hiroshis
+  disk_quota: 1024M
